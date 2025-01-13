@@ -35,4 +35,13 @@ public class ScheduleController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/getSchedule")
+    public ResponseEntity<?> getSchedule(@RequestParam int hocky, @RequestParam int namhoc) {
+        try {
+            return scheduleService.getSchedulesForSemester(hocky, namhoc);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

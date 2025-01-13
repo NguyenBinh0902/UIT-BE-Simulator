@@ -19,7 +19,9 @@ public class Student extends BaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "sid", nullable = false, unique = true)
     private String sid;
+    @Column(name = "course")
     private Integer course;
 
     @OneToMany(mappedBy = "student")

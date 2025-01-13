@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -62,23 +60,25 @@ public class ScheduleService {
         for (Course course : courses) {
             Schedule schedule = scheduleRepository.findScheduleByCourseId(course.getId()).orElseThrow(() -> new RuntimeException("Schedule not found"));
             List<SpecialSchedule> specialSchedules = specialScheduleRepository.findSpecialSchedulesByCourseId(course.getId());
-
             // Lặp qua từng ngày trong tuần
             for (LocalDate date = weekStartDate; !date.isAfter(weekEndDate); date = date.plusDays(1)) {
                 DayOfWeek dayOfWeek = date.getDayOfWeek();
 
                 // Kiểm tra lịch đặc biệt trước
                 LocalDate finalDate = date;
+                System.out.println(date);
                 Optional<SpecialSchedule> specialSchedule = specialSchedules.stream()
                         .filter(ss -> ss.getNgay().isEqual(finalDate))
                         .findFirst();
 
                 if (specialSchedule.isPresent()) {
+
+                    System.out.println(specialSchedule.get().getTiet());
                     // Nếu có lịch đặc biệt
                     weeklySchedule.add(convertToScheduleResponse(specialSchedule.get(), date));
                 } else if (isWithinDefaultSchedule(schedule, date, dayOfWeek)) {
                     // Nếu không có lịch đặc biệt, kiểm tra lịch mặc định
-                    weeklySchedule.add(convertToScheduleResponse(schedule, date));
+                    weeklySchedule.add(convertToScheduleResponse(schedule));
                 }
             }
         }
@@ -86,8 +86,59 @@ public class ScheduleService {
         return ResponseEntity.ok(weeklySchedule);
     }
 
+    public ResponseEntity<Map<Integer, List<ScheduleResponse>>> getSchedulesForSemester(int hocky, int namhoc) {
+        Authentication authentication = (Authentication) SecurityContextHolder.getContext().getAuthentication();
+        User currentUser = (User) authentication.getPrincipal();
+
+        if (currentUser.getStudent() == null) {
+            throw new RuntimeException("User is not a student");
+        }
+
+        // Lấy danh sách khóa học của sinh viên trong học kỳ và năm học
+        List<Course> courses = courseRepository.findCoursesByStudentIdAndSemester(currentUser.getStudent().getId(), hocky, namhoc);
+
+        // Tạo map chứa danh sách thời khóa biểu theo từng thứ
+        Map<Integer, List<ScheduleResponse>> scheduleByDay = new HashMap<>();
+        for (int i = 2; i <= 7; i++) { // Khởi tạo thứ 2 -> thứ 7
+            scheduleByDay.put(i, new ArrayList<>());
+        }
+
+        for (Course course : courses) {
+            // Lấy lịch mặc định của môn học
+            Schedule schedule = scheduleRepository.findScheduleByCourseId(course.getId())
+                    .orElseThrow(() -> new RuntimeException("Schedule not found for course: " + course.getId()));
+
+            // Lấy lịch đặc biệt của môn học
+            List<SpecialSchedule> specialSchedules = specialScheduleRepository.findSpecialSchedulesByCourseId(course.getId());
+
+            // Chuyển đổi thứ (schedule.getThu()) sang số nguyên
+            int dayOfWeek = schedule.getThu();
+
+            // Kiểm tra xem lịch mặc định có nằm trong thứ 2 -> thứ 7 không
+            if (dayOfWeek >= 2 && dayOfWeek <= 7) {
+                // Nếu có lịch đặc biệt, thêm vào kết quả
+                specialSchedules.stream()
+                        .filter(special -> special.getNgay().getDayOfWeek().getValue() == dayOfWeek)
+                        .forEach(special -> scheduleByDay.get(dayOfWeek).add(convertToScheduleResponse(special, special.getNgay())));
+
+                // Nếu không có lịch đặc biệt, thêm lịch mặc định
+                if (!hasSpecialScheduleForDay(specialSchedules, dayOfWeek)) {
+                    scheduleByDay.get(dayOfWeek).add(convertToScheduleResponse(schedule));
+                }
+            }
+        }
+
+        // Trả về thời khóa biểu theo thứ
+        return ResponseEntity.ok(scheduleByDay);
+    }
+
+    private boolean hasSpecialScheduleForDay(List<SpecialSchedule> specialSchedules, int dayOfWeek) {
+        return specialSchedules.stream()
+                .anyMatch(special -> special.getNgay().getDayOfWeek().getValue() == dayOfWeek);
+    }
+
     private boolean isWithinDefaultSchedule(Schedule schedule, LocalDate date, DayOfWeek dayOfWeek) {
-        return dayOfWeek.getValue() == Integer.parseInt(schedule.getThu()) &&
+        return dayOfWeek.getValue() == schedule.getThu() &&
                 !date.isBefore(schedule.getNgaybd()) &&
                 !date.isAfter(schedule.getNgaykt());
     }
@@ -102,9 +153,9 @@ public class ScheduleService {
         return scheduleResponse;
     }
 
-    private ScheduleResponse convertToScheduleResponse(Schedule schedule, LocalDate date) {
+    private ScheduleResponse convertToScheduleResponse(Schedule schedule) {
         ScheduleResponse scheduleResponse = new ScheduleResponse();
-        scheduleResponse.setThu(date.getDayOfWeek().getValue());
+        scheduleResponse.setThu(schedule.getThu());
         scheduleResponse.setPhonghoc(schedule.getPhonghoc());
         scheduleResponse.setOnline(schedule.isOnline());
         scheduleResponse.setTiet(schedule.getTiet());

@@ -27,8 +27,8 @@ public class SecurityConfig {
     @Value("${uit-app.openapi.dev-url}")
     private String devUrl;
 
-//    @Value("${uit-app.openapi.prod-url}")
-//    private String prodUrl;
+    @Value("${uit-app.openapi.prod-url}")
+    private String prodUrl;
 
     public SecurityConfig(AuthenticationProvider authenticationProvider, JwtAuthFilter jwtAuthFilter) {
         this.authenticationProvider = authenticationProvider;
@@ -60,7 +60,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration cors = new CorsConfiguration();
-            cors.setAllowedOrigins(List.of("http://localhost:8082"));
+            cors.setAllowedOrigins(List.of(devUrl, prodUrl));
             cors.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
             cors.setAllowedHeaders(List.of("Authorization", "Content-Type"));
 

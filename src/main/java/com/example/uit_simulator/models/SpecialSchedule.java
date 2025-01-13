@@ -18,11 +18,15 @@ public class SpecialSchedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(name = "ngay")
     private LocalDate ngay; // Ngày diễn ra
+    @Column(name = "tiet")
     private String tiet; // Tiết học
+    @Column(name = "phonghoc")
     private String phonghoc; // Phòng học
+    @Column(name = "online")
     private boolean online; // Online hay offline
+    @Column(name = "lydo")
     private String lydo; // Lý do (Học bù, gặp sinh viên, ...)
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

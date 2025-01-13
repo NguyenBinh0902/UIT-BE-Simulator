@@ -11,11 +11,11 @@ import java.util.Optional;
 
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
-    List<Schedule> findByThuAndCourse_Malop(String thu, String malop);
+    List<Schedule> findByThuAndCourse_Malop(int thu, String malop);
 
-    List<Schedule> findByThu(String thu);
+    List<Schedule> findByThu(int thu);
     @Query("SELECT s FROM Schedule s JOIN s.course c JOIN c.students st WHERE st.id = :studentId AND s.thu = :thu")
-    List<Schedule> findSchedulesByStudentIdAndThu(@Param("studentId") Long studentId, @Param("thu") String thu);
+    List<Schedule> findSchedulesByStudentIdAndThu(@Param("studentId") Long studentId, @Param("thu") int thu);
 
     @Query("SELECT s FROM Schedule s JOIN s.course c JOIN c.students st WHERE st.id = :studentId")
     List<Schedule> findSchedulesByStudentId(@Param("studentId") Long studentId);

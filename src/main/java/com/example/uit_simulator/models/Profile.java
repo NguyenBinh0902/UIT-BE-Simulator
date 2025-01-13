@@ -18,13 +18,22 @@ public class Profile extends BaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
+    @Column(name = "status")
     private Integer status;
+    @Column(name = "major")
     private String major;
+    @Column(name = "dob")
     private LocalDate dob;
+    @Column(name = "role")
     private String role;
+    @Column(name = "class_name")
     private String className;
+    @Column(name = "address")
     private String address;
+    @Column(name = "avatar_url")
     private String avatarUrl;
 }

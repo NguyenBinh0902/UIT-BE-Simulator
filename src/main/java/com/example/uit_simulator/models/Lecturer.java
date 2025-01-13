@@ -18,6 +18,8 @@ public class Lecturer extends BaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "lecturer_id")
     private String lecturerId;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -17,12 +17,17 @@ public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String thu; // Thứ (3, 4,...)
+    @Column(name = "thu")
+    private int thu; // Thứ (3, 4,...)
+    @Column(name = "tiet")
     private String tiet; // Tiết (1-3, 4-5,...)
+    @Column(name = "phonghoc")
     private String phonghoc; // Phòng học
+    @Column(name = "online")
     private boolean online; // Online hay offline
+    @Column(name = "ngaybd")
     private LocalDate ngaybd; // Ngày bắt đầu
+    @Column(name = "ngaykt")
     private LocalDate ngaykt; // Ngày kết thúc
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
