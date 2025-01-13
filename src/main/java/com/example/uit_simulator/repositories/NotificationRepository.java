@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
     List<Notification> findByStudentIdAndHockyAndNamhoc(Long studentId, int hocky, int namhoc);
-    Page<Notification> findByStudentId(Long studentId, Pageable pageable);
+    List<Notification> findByStudentId(Long studentId, Pageable pageable);
 }

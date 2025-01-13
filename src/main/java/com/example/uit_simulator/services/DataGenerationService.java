@@ -144,7 +144,9 @@ public class DataGenerationService {
             course.setLoaimh("CSNN");
             course.setDadangky(random.nextInt(100));
             course.setNgonngu("VN");
-            course.setHt2_lichgapsv("Tiết 3,4 ngày 2023-10-15, P B6.12");
+            if (course.getHinhthucgd().equals( "HT2")){
+                course.setHt2_lichgapsv("Tiết 3,4 ngày 2024-11-15, P B6.12");
+            }
 
             // Gán lecturer cho course
             course.setLecturers(lecturers.subList(0, random.nextInt(lecturers.size())));
@@ -161,12 +163,12 @@ public class DataGenerationService {
         for (Course course : courses) {
             // Tạo Schedule
             Schedule schedule = new Schedule();
-            schedule.setThu(String.valueOf(random.nextInt(5) + 2)); // Thứ 2 -> Thứ 6
+            schedule.setThu(random.nextInt(5) + 2); // Thứ 2 -> Thứ 6
             schedule.setTiet((random.nextInt(4) + 1) + "-" + (random.nextInt(3) + 4)); // Tiết 1-3, 2-4, ...
             schedule.setPhonghoc("P" + faker.number().digits(3));
             schedule.setOnline(random.nextBoolean());
-            schedule.setNgaybd(LocalDate.of(2023, 9, 2));
-            schedule.setNgaykt(LocalDate.of(2023, 12, 28));
+            schedule.setNgaybd(LocalDate.of(2024, 9, 2));
+            schedule.setNgaykt(LocalDate.of(2024, 12, 28));
             schedule.setCourse(course);
             course.setSchedule(schedule);
             schedules.add(schedule);
@@ -262,6 +264,8 @@ public class DataGenerationService {
                 score.setHeso4(String.valueOf(heso4));
 
                 scores.add(score);
+
+                System.out.println("Student: " + student.getProfile().getName() + " - Course: " + course.getTenmh() + " - Score: " + totalScore);
             }
         }
 

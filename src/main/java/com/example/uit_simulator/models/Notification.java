@@ -18,14 +18,19 @@ public class Notification extends BaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @Column(name = "title")
     private String title; // Tiêu đề thông báo
-    @Column(length = 5000)
+    @Column(name = "content",length = 5000)
     private String content; // Nội dung thông báo
+    @Column(name = "type")
     private String type; // Loại thông báo (VD: HP - Học phí, BB - Học bù, ...)
+    @Column(name = "member")
     private String member; // Đối tượng nhận thông báo (VD: SV - Sinh viên)
+    @Column(name = "dated")
     private LocalDateTime dated; // Thời gian thông báo được tạo
+    @Column(name = "hocky")
     private int hocky; // Học kỳ
+    @Column(name = "namhoc")
     private int namhoc; // Năm học
 
     @ManyToOne(fetch = FetchType.LAZY)

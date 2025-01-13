@@ -6,9 +6,9 @@ import java.util.List;
 
 @Data
 public class ScoreResponse {
-    private String name; // Tên của response ("Điểm: HK 1, NH 2021-2022")
-    private List<ScoreDetails> score; // Danh sách các chi tiết điểm
-    private String currentAcademicYear; // Năm học hiện tại
+    private String name;
+    private List<ScoreDetails> score;
+    private String currentAcademicYear;
 
     @Data
     public static class ScoreDetails {

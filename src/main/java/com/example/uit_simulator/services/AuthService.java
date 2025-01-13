@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -42,8 +43,11 @@ public class AuthService {
         roles.add(userRole);
         user.setRoles(roles);
         User savedUser = userRepository.save(user);
+
+        String token = jwtService.generateToken(savedUser);
+        Date expiredAt = jwtService.extractExpiration(token);
         List<String> roleNames = savedUser.getRoles().stream().map(role -> role.getName().name()).toList();
-        return new AuthResponse(jwtService.generateToken(savedUser));
+        return new AuthResponse(token, expiredAt);
     }
 
     public AuthResponse loginUser(LoginUserRequest loginUser) {
@@ -51,6 +55,8 @@ public class AuthService {
         authenticationManager.authenticate(authToken);
         User user = userRepository.findByUsername(loginUser.getUsername()).orElseThrow(() -> new RuntimeException("User not found"));
         List<String> roleNames = user.getRoles().stream().map(role -> role.getName().name()).toList();
-        return new AuthResponse(jwtService.generateToken(user));
+        String token = jwtService.generateToken(user);
+        Date expiredAt = jwtService.extractExpiration(token);
+        return new AuthResponse(token, expiredAt);
     }
 }
